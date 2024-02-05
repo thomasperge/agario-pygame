@@ -2,8 +2,8 @@ import pygame
 
 # Screen
 pygame.init()
-width = 600
-height = 600
+width = 800
+height = 800
 screen = pygame.display.set_mode((width, height))
 background = (255, 255, 255)
 blue = (0, 0, 255)
