@@ -13,11 +13,13 @@ red = (255, 0, 0)
 screen.fill(background)
 
 # Inititalize Player
-player = Player("Player1", 300, 300, 4)
+player = Player("Player1", 300, 300, 4, 15)
 
 # Initialize Feed1
-feed1 = Feed("Feed1")
-feed2 = Feed("Feed2")
+feed1 = Feed("Feed1", 9)
+feed2 = Feed("Feed2", 9)
+
+feeds = [feed1, feed2]
 
 feed1.create_feed(width, height)
 feed2.create_feed(width, height)
@@ -45,15 +47,25 @@ while game_started:
     mouse_position = player.mouse_move(mouse_x, mouse_y)
     player.change_direction(mouse_position[0], mouse_position[1])
 
+    # Collision
+    for feed in feeds:
+        distance = ((player.get_position()[0] - feed.get_position()[0]) ** 2 + (player.get_position()[1] - feed.get_position()[1]) ** 2) ** 0.5
+
+        if distance <= player.get_size() + feed.get_size():
+            player.set_size(player.get_size() + 2)
+            feeds.remove(feed)
+
     # Move player
     player.move()
 
-    # Refrash Display
     screen.fill(background)
 
-    pygame.draw.circle(screen, blue, player.get_positions(), 12)
-    pygame.draw.circle(screen, red, feed1.get_positions(), 10)
-    pygame.draw.circle(screen, red, feed2.get_positions(), 10)
+    # Display Player
+    pygame.draw.circle(screen, blue, player.get_position(), player.get_size())
+
+    # Display all feeds
+    for feed in feeds:
+        pygame.draw.circle(screen, red, feed.get_position(), feed.get_size())
 
     pygame.display.flip()
     clock.tick(30)
