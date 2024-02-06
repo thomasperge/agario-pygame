@@ -17,7 +17,5 @@ class Feed :
     def get_positions(self):
         return self.x, self.y
     
-    def display_feed(self, screen_width, screen_height, sprite):
+    def create_feed(self, screen_width, screen_height):
         self.x, self.y = self.generated_random_position(screen_width, screen_height)
-        sprite.x = self.x
-        sprite.y = self.y

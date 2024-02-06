@@ -13,8 +13,8 @@ class Player :
         self.direction = (x, y)
 
     def mouse_move(self, mouse_x, mouse_y):
-        dx = mouse_x - self.get_position()[0]
-        dy = mouse_y - self.get_position()[1]
+        dx = mouse_x - self.get_positions()[0]
+        dy = mouse_y - self.get_positions()[1]
 
         length = (dx ** 2 + dy ** 2) ** 0.5
         if length != 0:
@@ -29,7 +29,7 @@ class Player :
         self.xposition += self.direction[0]
         self.yposition += self.direction[1]
 
-    def get_position(self):
+    def get_positions(self):
         return self.xposition, self.yposition
     
     def set_speed(self, speed):

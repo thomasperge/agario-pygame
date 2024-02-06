@@ -2,7 +2,7 @@ import pygame
 from player import Player
 from feed import Feed
 
-# Screen
+# Init Screen
 pygame.init()
 width = 1125
 height = 675
@@ -13,27 +13,19 @@ red = (255, 0, 0)
 screen.fill(background)
 
 # Inititalize Player
-player = Player("Player1", 300, 300, 3)
+player = Player("Player1", 300, 300, 4)
 
 # Initialize Feed1
 feed1 = Feed("Feed1")
+feed2 = Feed("Feed2")
 
-# Display Player Sprite
-playerSprite = pygame.Rect(0, 0, 25, 25)
-playerSprite.x = player.get_position()[0]
-playerSprite.y = player.get_position()[1]
-
-# Display Feed Sprite
-feed1Sprite = pygame.Rect(0, 0, 25, 25)
-feed1.display_feed(width, height, feed1Sprite)
-
-pygame.draw.rect(screen, blue, playerSprite)
-pygame.draw.rect(screen, red, feed1Sprite)
+feed1.create_feed(width, height)
+feed2.create_feed(width, height)
 
 game_started = True
 clock = pygame.time.Clock()
 
-while game_started :
+while game_started:
     # Keyboard
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,22 +39,23 @@ while game_started :
                 player.change_direction(player.get_speed(), 0)
             elif event.key == pygame.K_LEFT:
                 player.change_direction(-player.get_speed(), 0)
-    
+
     # Mouse
     mouse_x, mouse_y = pygame.mouse.get_pos()
     mouse_position = player.mouse_move(mouse_x, mouse_y)
     player.change_direction(mouse_position[0], mouse_position[1])
 
-    # Display new sprite
-    playerSprite.x = player.get_position()[0]
-    playerSprite.y = player.get_position()[1]
+    # Move player
     player.move()
 
+    # Refrash Display
     screen.fill(background)
-    pygame.draw.rect(screen, blue, playerSprite)
-    pygame.draw.rect(screen, red, feed1Sprite)
-    pygame.display.flip()
 
+    pygame.draw.circle(screen, blue, player.get_positions(), 12)
+    pygame.draw.circle(screen, red, feed1.get_positions(), 10)
+    pygame.draw.circle(screen, red, feed2.get_positions(), 10)
+
+    pygame.display.flip()
     clock.tick(30)
 
 pygame.quit()
