@@ -24,6 +24,7 @@ class Player :
 
         vx = dx * self.get_speed()
         vy = dy * self.get_speed()
+        print(self.get_speed())
         return vx, vy
 
     def move(self):
