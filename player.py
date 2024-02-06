@@ -12,6 +12,19 @@ class Player :
     def change_direction(self, x, y):
         self.direction = (x, y)
 
+    def mouse_move(self, mouse_x, mouse_y):
+        dx = mouse_x - self.get_position()[0]
+        dy = mouse_y - self.get_position()[1]
+
+        length = (dx ** 2 + dy ** 2) ** 0.5
+        if length != 0:
+            dx /= length
+            dy /= length
+
+        vx = dx * self.get_speed()
+        vy = dy * self.get_speed()
+        return vx, vy
+
     def move(self):
         self.xposition += self.direction[0]
         self.yposition += self.direction[1]

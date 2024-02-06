@@ -1,5 +1,6 @@
 import pygame
 from player import Player
+from feed import Feed
 
 # Screen
 pygame.init()
@@ -11,15 +12,23 @@ blue = (0, 0, 255)
 red = (255, 0, 0)
 screen.fill(background)
 
-# Inititalize Snake
-player = Player("Gabriel_Le_Snake", 300, 300, 3)
+# Inititalize Player
+player = Player("Player1", 300, 300, 3)
 
-# Display Snake Sprite
+# Initialize Feed1
+feed1 = Feed("Feed1")
+
+# Display Player Sprite
 playerSprite = pygame.Rect(0, 0, 25, 25)
 playerSprite.x = player.get_position()[0]
 playerSprite.y = player.get_position()[1]
 
+# Display Feed Sprite
+feed1Sprite = pygame.Rect(0, 0, 25, 25)
+feed1.display_feed(width, height, feed1Sprite)
+
 pygame.draw.rect(screen, blue, playerSprite)
+pygame.draw.rect(screen, red, feed1Sprite)
 
 game_started = True
 clock = pygame.time.Clock()
@@ -41,30 +50,17 @@ while game_started :
     
     # Mouse
     mouse_x, mouse_y = pygame.mouse.get_pos()
+    mouse_position = player.mouse_move(mouse_x, mouse_y)
+    player.change_direction(mouse_position[0], mouse_position[1])
 
-    # Calculating direction vector
-    dx = mouse_x - player.get_position()[0]
-    dy = mouse_y - player.get_position()[1]
-
-    # Normalizing the direction vector
-    length = (dx ** 2 + dy ** 2) ** 0.5
-    if length != 0:
-        dx /= length
-        dy /= length
-
-    # Moving the player with normalized direction and constant speed
-    vx = dx * player.get_speed()
-    vy = dy * player.get_speed()
-
-    player.change_direction(vx, vy)
-    player.move()
-
+    # Display new sprite
     playerSprite.x = player.get_position()[0]
     playerSprite.y = player.get_position()[1]
     player.move()
 
     screen.fill(background)
     pygame.draw.rect(screen, blue, playerSprite)
+    pygame.draw.rect(screen, red, feed1Sprite)
     pygame.display.flip()
 
     clock.tick(30)
