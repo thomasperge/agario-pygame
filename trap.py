@@ -1,11 +1,11 @@
 import random
 
-class Feed:
-    def __init__(self, name, size):
+class Trap:
+    def __init__(self, name, minSize, maxSize):
         self.nom = name
         self.x = 0
         self.y = 0
-        self.size = size
+        self.size = random.randint(minSize, maxSize)
 
     def get_name(self):
         return self.nom
@@ -18,7 +18,7 @@ class Feed:
     def get_position(self):
         return self.x, self.y
     
-    def create_feed(self, screen_width, screen_height):
+    def create_trap(self, screen_width, screen_height):
         self.x, self.y = self.generated_random_position(screen_width, screen_height)
 
     def set_size(self, size):

@@ -1,4 +1,4 @@
-class Player :
+class Player:
     def __init__(self, name, x, y, speed, size):
         self.nom = name
         self.xposition = x
@@ -24,7 +24,6 @@ class Player :
 
         vx = dx * self.get_speed()
         vy = dy * self.get_speed()
-        print(self.get_speed())
         return vx, vy
 
     def move(self):
