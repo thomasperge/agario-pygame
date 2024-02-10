@@ -3,24 +3,40 @@ from player import Player
 from feed import Feed
 from trap import Trap
 
+BACKGROUND = (255, 255, 255)
+BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
 class Game:
-    def __init__(self):
-        pygame.init()
+    def __init__(self, screen, is_played_with_mouse, difficulty, menu_run_class):
+        self.menu_run_class = menu_run_class
+        self.width = screen.get_width()
+        self.height = screen.get_height()
+        self.difficulty = difficulty
+        self.is_played_with_mouse = is_played_with_mouse
 
-        self.width = 1125
-        self.height = 675
-        self.background = (255, 255, 255)
-        self.blue = (0, 0, 255)
-        self.red = (255, 0, 0)
-        self.green = (0, 255, 0)
         self.clock = pygame.time.Clock()
+        self.start_time = pygame.time.get_ticks()
 
-        self.feeds = [Feed("Feed1", 9), Feed("Feed2", 9), Feed("Feed3", 9), Feed("Feed4", 9), Feed("Feed5", 9)]
-        self.traps = [Trap("Trap1", 40, 150), Trap("Trap2", 40, 150)]
+        if difficulty == 2:
+            num_traps = 2
+            num_feeds = 5
+        elif difficulty == 3:
+            num_traps = 3
+            num_feeds = 3
+        elif difficulty == 4:
+            num_traps = 4
+            num_feeds = 2
+
+        self.traps = [Trap(f"Trap{i+1}", 40, 150) for i in range(num_traps)]
+        self.feeds = [Feed(f"Feed{i+1}", 9) for i in range(num_feeds)]
         self.player = Player("Player1", 300, 300, 4, 75)
 
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        self.screen.fill(self.background)
+        self.screen = screen
+        pygame.display.set_caption("Game")
+        self.font = pygame.font.Font(None, 36)
+        self.create_sprite()
 
     def create_sprite(self):
         for feed in self.feeds:
@@ -29,37 +45,34 @@ class Game:
         for trap in self.traps:
             trap.create_trap(self.width, self.height)
 
-    def lauch_game(self, is_launched, is_played_with_mouse):
-        self.create_sprite()
-
+    def run(self, is_launched):
         while is_launched:
             # Leave the game
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_launched = False
-                    
-            # Mouse
-            if is_played_with_mouse:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                player_x, player_y = self.player.get_position()
 
+            player_x, player_y = self.player.get_position()
+    
+            # Mouse
+            if self.is_played_with_mouse:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
                 if (player_x - self.player.get_size() / (self.player.get_size() - 2) < mouse_x < player_x + self.player.get_size() / (self.player.get_size() - 2)) and (player_y - self.player.get_size() / (self.player.get_size() - 2) < mouse_y < player_y + self.player.get_size() / (self.player.get_size() - 2)):
                     self.player.change_direction(0, 0)
                 else:
                     mouse_position = self.player.mouse_move(mouse_x, mouse_y)
                     self.player.change_direction(int(mouse_position[0]), int(mouse_position[1]))
             # Keyboard
-            else :
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_DOWN:
-                            self.player.change_direction(0, self.player.get_speed())
-                        elif event.key == pygame.K_UP:
-                            self.player.change_direction(0, -self.player.get_speed())
-                        elif event.key == pygame.K_RIGHT:
-                            self.player.change_direction(self.player.get_speed(), 0)
-                        elif event.key == pygame.K_LEFT:
-                            self.player.change_direction(-self.player.get_speed(), 0)
+            else:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_DOWN]:
+                    self.player.change_direction(0, self.player.get_speed())
+                elif keys[pygame.K_UP]:
+                    self.player.change_direction(0, -self.player.get_speed())
+                elif keys[pygame.K_RIGHT]:
+                    self.player.change_direction(self.player.get_speed(), 0)
+                elif keys[pygame.K_LEFT]:
+                    self.player.change_direction(-self.player.get_speed(), 0)
 
             # == Collision ==
             # Check if player is out of screen boundaries
@@ -78,7 +91,7 @@ class Game:
 
                 if distance <= self.player.get_size() + feed.get_size():
                     self.player.set_size(self.player.get_size() + 2)
-                    # player.set_speed(player.get_speed() + 5)
+                    # self.player.set_speed(self.player.get_speed() + 5)
                     self.feeds.remove(feed)
 
                     # Create new feed
@@ -94,6 +107,7 @@ class Game:
                 if distance <= self.player.get_size() + trap.get_size():
                     if self.player.get_size() > trap.get_size():
                         self.player.set_size(self.player.get_size() / 2)
+                        self.player.set_speed(self.player.get_speed() / self.difficulty)
                         self.traps.remove(trap)
 
                         # Create new Trap
@@ -102,21 +116,28 @@ class Game:
                         newTrap.create_trap(self.width, self.height)
                         self.traps.append(newTrap)
 
-            # == Draw / Display ==
-            # Move player
+            # == Draw / Display & Score / Timer==
+            # Timer
+            elapsed_time = pygame.time.get_ticks() - self.start_time
+            remaining_seconds = max(10 - elapsed_time // 1000, 0)
+
+            if remaining_seconds == 0:
+                self.menu_run_class.run()
+
+            # Move all sprite
             self.player.move()
-            self.screen.fill(self.background)
+            self.screen.fill(BACKGROUND)
 
-            # Display Player
-            pygame.draw.circle(self.screen, self.blue, self.player.get_position(), self.player.get_size())
+            pygame.draw.circle(self.screen, BLUE, self.player.get_position(), self.player.get_size())
 
-            # Display all feeds
             for feed in self.feeds:
-                pygame.draw.circle(self.screen, self.green, feed.get_position(), feed.get_size())
+                pygame.draw.circle(self.screen, GREEN, feed.get_position(), feed.get_size())
 
-            # Display all traps
             for trap in self.traps:
-                pygame.draw.circle(self.screen, self.red, trap.get_position(), trap.get_size())
+                pygame.draw.circle(self.screen, RED, trap.get_position(), trap.get_size())
+
+            timer_text = self.font.render("Time: {} s".format(remaining_seconds), True, (0, 0, 0))
+            self.screen.blit(timer_text, (10, 10))
 
             pygame.display.flip()
             self.clock.tick(30)

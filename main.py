@@ -1,5 +1,9 @@
-from game import Game
+import pygame
+from menu import Menu
 
 if __name__ == "__main__":
-    game = Game()
-    game.lauch_game(True, True)
+    pygame.init()
+    screen = pygame.display.set_mode((1280, 720))
+    pygame.display.set_caption("Menu")
+    menu = Menu(screen)
+    menu.run()
