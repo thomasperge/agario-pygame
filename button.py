@@ -23,5 +23,8 @@ class Button:
         self.surface = self.font.render(self.text, True, color)
         screen.blit(self.surface, self.rect)
 
+    def reset_colors(self):
+        self.selected = False
+
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)

@@ -2,6 +2,7 @@ import pygame
 from player import Player
 from feed import Feed
 from trap import Trap
+from stats import Stats
 
 BACKGROUND = (255, 255, 255)
 BLUE = (0, 0, 255)
@@ -9,8 +10,8 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
 class Game:
-    def __init__(self, screen, is_played_with_mouse, difficulty, menu_run_class):
-        self.menu_run_class = menu_run_class
+    def __init__(self, screen, is_played_with_mouse, difficulty, menu_class):
+        self.menu_class = menu_class
         self.width = screen.get_width()
         self.height = screen.get_height()
         self.difficulty = difficulty
@@ -18,6 +19,7 @@ class Game:
 
         self.clock = pygame.time.Clock()
         self.start_time = pygame.time.get_ticks()
+        self.score = 0
 
         if difficulty == 2:
             num_traps = 2
@@ -51,6 +53,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     is_launched = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE or event.key == pygame.K_SPACE:
+                        self.menu_class.reset_settings()
+                        self.menu_class.run()
 
             player_x, player_y = self.player.get_position()
     
@@ -65,13 +71,13 @@ class Game:
             # Keyboard
             else:
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_DOWN]:
+                if keys[pygame.K_s]:
                     self.player.change_direction(0, self.player.get_speed())
-                elif keys[pygame.K_UP]:
+                elif keys[pygame.K_z]:
                     self.player.change_direction(0, -self.player.get_speed())
-                elif keys[pygame.K_RIGHT]:
+                elif keys[pygame.K_d]:
                     self.player.change_direction(self.player.get_speed(), 0)
-                elif keys[pygame.K_LEFT]:
+                elif keys[pygame.K_q]:
                     self.player.change_direction(-self.player.get_speed(), 0)
 
             # == Collision ==
@@ -90,9 +96,14 @@ class Game:
                 distance = ((self.player.get_position()[0] - feed.get_position()[0]) ** 2 + (self.player.get_position()[1] - feed.get_position()[1]) ** 2) ** 0.5
 
                 if distance <= self.player.get_size() + feed.get_size():
-                    self.player.set_size(self.player.get_size() + 2)
-                    # self.player.set_speed(self.player.get_speed() + 5)
+                    if self.player.get_size() < 150 :
+                        self.player.set_size(self.player.get_size() + 2)
+
+                    if self.player.get_speed() < 11 :
+                        self.player.set_speed(self.player.get_speed() + 0.5)
+
                     self.feeds.remove(feed)
+                    self.score += 1
 
                     # Create new feed
                     new_feed_name = "Feed" + str(len(self.feeds) + 1)
@@ -119,10 +130,13 @@ class Game:
             # == Draw / Display & Score / Timer==
             # Timer
             elapsed_time = pygame.time.get_ticks() - self.start_time
-            remaining_seconds = max(10 - elapsed_time // 1000, 0)
+            remaining_seconds = max(60 - elapsed_time // 1000, 0)
 
             if remaining_seconds == 0:
-                self.menu_run_class.run()
+                self.menu_class.reset_settings()
+
+                stats = Stats(self.screen, self.menu_class, self.score)
+                stats.run()
 
             # Move all sprite
             self.player.move()
@@ -130,14 +144,22 @@ class Game:
 
             pygame.draw.circle(self.screen, BLUE, self.player.get_position(), self.player.get_size())
 
+            for trap in self.traps:
+                pygame.draw.circle(self.screen, RED, trap.get_position(), trap.get_size())
+                
             for feed in self.feeds:
                 pygame.draw.circle(self.screen, GREEN, feed.get_position(), feed.get_size())
 
-            for trap in self.traps:
-                pygame.draw.circle(self.screen, RED, trap.get_position(), trap.get_size())
-
             timer_text = self.font.render("Time: {} s".format(remaining_seconds), True, (0, 0, 0))
+            score_text = self.font.render("Score: {}".format(self.score), True, (0, 0, 0))
+            speed_text = self.font.render("Speed: {} km/h".format(self.player.speed), True, (0, 0, 0))
+            size_text = self.font.render("Size: {}".format(self.player.size), True, (0, 0, 0))
+            difficulty_text = self.font.render("Difficulty: {}".format(self.difficulty), True, (0, 0, 0))
             self.screen.blit(timer_text, (10, 10))
+            self.screen.blit(score_text, (10, 40))
+            self.screen.blit(speed_text, (10, 70))
+            self.screen.blit(size_text, (10, 100))
+            self.screen.blit(difficulty_text, (10, 130))
 
             pygame.display.flip()
             self.clock.tick(30)
