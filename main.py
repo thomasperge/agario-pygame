@@ -68,6 +68,16 @@ while game_started:
         mouse_position = player.mouse_move(mouse_x, mouse_y)
         player.change_direction(int(mouse_position[0]), int(mouse_position[1]))
 
+    # Check if player is out of screen boundaries
+    if player_x - player.get_size() / 2 < 0:
+        player.set_position(width - player.get_size() / 2, player_y)
+    elif player_x + player.get_size() / 2 > width:
+        player.set_position(player.get_size() / 2, player_y)
+    elif player_y - player.get_size() / 2 < 0:
+        player.set_position(player_x, height - player.get_size() / 2)
+    elif player_y + player.get_size() / 2 > height:
+        player.set_position(player_x, player.get_size() / 2)
+
     # Collision with feed(s)
     for feed in feeds:
         distance = ((player.get_position()[0] - feed.get_position()[0]) ** 2 + (player.get_position()[1] - feed.get_position()[1]) ** 2) ** 0.5

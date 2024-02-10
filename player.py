@@ -33,6 +33,10 @@ class Player:
     def get_position(self):
         return self.xposition, self.yposition
     
+    def set_position(self, x, y):
+        self.xposition = x
+        self.yposition = y
+    
     def set_speed(self, speed):
         self.speed = speed
 
