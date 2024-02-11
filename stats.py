@@ -28,7 +28,6 @@ class Stats:
         self.screen.blit(score_text, score_rect)
 
         self.back_to_menu.draw(self.screen)
-
         pygame.display.flip()
 
     def handle_events(self):

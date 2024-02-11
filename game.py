@@ -41,9 +41,11 @@ class Game:
         self.create_sprite()
 
     def create_sprite(self):
+        # Create Feed Sprite
         for feed in self.feeds:
             feed.create_feed(self.width, self.height)
 
+        # Create Trap Sprite
         for trap in self.traps:
             trap.create_trap(self.width, self.height)
 
@@ -127,14 +129,13 @@ class Game:
                         newTrap.create_trap(self.width, self.height)
                         self.traps.append(newTrap)
 
-            # == Draw / Display & Score / Timer==
+            # == Draw / Display & Score / Timer ==
             # Timer
             elapsed_time = pygame.time.get_ticks() - self.start_time
             remaining_seconds = max(60 - elapsed_time // 1000, 0)
 
             if remaining_seconds == 0:
                 self.menu_class.reset_settings()
-
                 stats = Stats(self.screen, self.menu_class, self.score)
                 stats.run()
 
@@ -150,11 +151,14 @@ class Game:
             for feed in self.feeds:
                 pygame.draw.circle(self.screen, GREEN, feed.get_position(), feed.get_size())
 
+            # Initialize all scoreboard
             timer_text = self.font.render("Time: {} s".format(remaining_seconds), True, (0, 0, 0))
             score_text = self.font.render("Score: {}".format(self.score), True, (0, 0, 0))
             speed_text = self.font.render("Speed: {} km/h".format(self.player.speed), True, (0, 0, 0))
             size_text = self.font.render("Size: {}".format(self.player.size), True, (0, 0, 0))
             difficulty_text = self.font.render("Difficulty: {}".format(self.difficulty), True, (0, 0, 0))
+
+            # Display all scoreboard
             self.screen.blit(timer_text, (10, 10))
             self.screen.blit(score_text, (10, 40))
             self.screen.blit(speed_text, (10, 70))
@@ -163,4 +167,5 @@ class Game:
 
             pygame.display.flip()
             self.clock.tick(30)
+
         pygame.quit()

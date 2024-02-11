@@ -50,7 +50,7 @@ dependencies:
 
 Create and activate a virtual environment from an environement.yml import file
 ```bash
-conda env create -f environment.yaml
+conda env create -f environment.yml
 conda activate agario-pygame
 ```
 
