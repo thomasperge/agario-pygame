@@ -33,7 +33,7 @@ class Game:
 
         self.traps = [Trap(f"Trap{i+1}", 40, 150) for i in range(num_traps)]
         self.feeds = [Feed(f"Feed{i+1}", 9) for i in range(num_feeds)]
-        self.player = Player("Player1", 300, 300, 4, 75)
+        self.player = Player("Player1", 300, 300, 4, 40)
 
         self.screen = screen
         pygame.display.set_caption("Game")

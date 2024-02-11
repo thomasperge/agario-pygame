@@ -17,6 +17,8 @@ class Menu:
         self.difficulty = None
         self.game_handle = None
         self.create_buttons()
+
+        pygame.display.set_caption("Menu")
     
     def create_buttons(self):
         # Initialize all buttons
@@ -82,6 +84,15 @@ class Menu:
                         elif button.value == "quit":
                             pygame.quit()
                             sys.exit()
+
+            # Keyboard input
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p or event.key == pygame.K_P:
+                    # Set game handle to keyboard
+                    for btn in self.buttons:
+                        btn.selected = False
+                    self.game_handle = "keyboard"
+                    print("Selected play option: keyboard")
 
     def game_settings(self):
         data = [None, None]
